@@ -53,6 +53,18 @@ export function formatTotalScoreLine(
 	return `${totalScore.join("|")}|`;
 }
 
+function formatFrameScore(frame: Frame): string {
+	let frameScore = formatFirstThrow(frame.firstThrow);
+
+	if (frame.secondThrow !== undefined) {
+		frameScore += ` ${formatSecondThrow(frame.firstThrow, frame.secondThrow)}`;
+	} else if (frameScore !== "x") {
+		frameScore += "  ";
+	}
+
+	return `${getRemainingSpaces(frameScore.length)}${frameScore}`;
+}
+
 function formatFrameScoreLine(totalFrames: number, throws: Throws): string {
 	const frameScore = ["Frame score	"];
 
@@ -111,16 +123,6 @@ function formatLastFrameScore(frame: LastFrame): string {
 
 	if (frame.thirdThrow !== undefined) {
 		frameScore += ` ${formatFirstThrow(frame.thirdThrow)}`;
-	}
-
-	return `${getRemainingSpaces(frameScore.length)}${frameScore}`;
-}
-
-function formatFrameScore(frame: Frame): string {
-	let frameScore = formatFirstThrow(frame.firstThrow);
-
-	if (frame.secondThrow !== undefined) {
-		frameScore += ` ${formatSecondThrow(frame.firstThrow, frame.secondThrow)}`;
 	}
 
 	return `${getRemainingSpaces(frameScore.length)}${frameScore}`;
