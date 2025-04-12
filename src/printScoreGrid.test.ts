@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { formatScoreGrid } from "./displayScoreGrid";
+import { formatScoreGrid } from "./printScoreGrid";
 
-import type { Throws } from "./bowlingGame";
+import type { FrameGrid } from "./bowlingGame";
 
 describe("formatScoreGrid", () => {
 	const spareFrame = {
@@ -19,7 +19,7 @@ describe("formatScoreGrid", () => {
 	};
 
 	it("should return formatted score for frame 1 throw 1", () => {
-		const frames: Throws["frames"] = new Map();
+		const frames: FrameGrid["frames"] = new Map();
 
 		frames.set(1, {
 			firstThrow: 1,
@@ -39,7 +39,7 @@ describe("formatScoreGrid", () => {
 	});
 
 	it("should return formatted score for frame 1 throw 2", () => {
-		const frames: Throws["frames"] = new Map();
+		const frames: FrameGrid["frames"] = new Map();
 
 		frames.set(1, normalFrame);
 
@@ -56,7 +56,7 @@ describe("formatScoreGrid", () => {
 		expect(actual).toEqual(expected);
 	});
 	it("should return formatted score for 2 simple frames", () => {
-		const frames: Throws["frames"] = new Map();
+		const frames: FrameGrid["frames"] = new Map();
 
 		frames.set(1, normalFrame);
 		frames.set(2, normalFrame);
@@ -76,7 +76,7 @@ describe("formatScoreGrid", () => {
 
 	describe("spare handling", () => {
 		it("should return formatted score when current throw is a spare", () => {
-			const frames: Throws["frames"] = new Map();
+			const frames: FrameGrid["frames"] = new Map();
 
 			frames.set(1, spareFrame);
 
@@ -94,7 +94,7 @@ describe("formatScoreGrid", () => {
 		});
 
 		it("should return formatted score when last throw is a spare with accumulated score", () => {
-			const frames: Throws["frames"] = new Map();
+			const frames: FrameGrid["frames"] = new Map();
 
 			frames.set(1, spareFrame);
 			frames.set(2, normalFrame);
@@ -115,7 +115,7 @@ describe("formatScoreGrid", () => {
 
 	describe("strike handling", () => {
 		it("should return formatted score when current throw is a strike", () => {
-			const frames: Throws["frames"] = new Map();
+			const frames: FrameGrid["frames"] = new Map();
 
 			frames.set(1, strikeFrame);
 
@@ -133,7 +133,7 @@ describe("formatScoreGrid", () => {
 		});
 
 		it("should return formatted score when last throw is a strike with accumulated score", () => {
-			const frames: Throws["frames"] = new Map();
+			const frames: FrameGrid["frames"] = new Map();
 
 			frames.set(1, strikeFrame);
 			frames.set(2, normalFrame);
@@ -153,7 +153,7 @@ describe("formatScoreGrid", () => {
 	});
 
 	it("should return formatted score for a complex score", () => {
-		const frames: Throws["frames"] = new Map();
+		const frames: FrameGrid["frames"] = new Map();
 
 		frames.set(1, strikeFrame);
 
@@ -183,7 +183,7 @@ describe("formatScoreGrid", () => {
 	});
 
 	it("should return formatted score for the perfect score", () => {
-		const frames: Throws["frames"] = new Map();
+		const frames: FrameGrid["frames"] = new Map();
 
 		frames.set(1, strikeFrame);
 		frames.set(2, strikeFrame);
@@ -203,7 +203,7 @@ describe("formatScoreGrid", () => {
 		const expected = `
 	Frame		|   1|   2|   3|   4|   5|   6|   7|   8|   9|  10|
 	Frame score	|   x|   x|   x|   x|   x|   x|   x|   x|   x| xxx|
-	Total score	|  30|  60|  90| 120| 150| 180| 210| 230| 240| 300|`;
+	Total score	|  30|  60|  90| 120| 150| 180| 210| 240| 270| 300|`;
 
 		expect(actual).toEqual(expected);
 	});

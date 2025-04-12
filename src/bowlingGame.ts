@@ -1,8 +1,15 @@
+import readline from "node:readline";
 import { number } from "@inquirer/prompts";
-import { displayScoreGrid } from "./displayScoreGrid";
+import { printScoreGrid } from "./printScoreGrid";
 
-async function askNextScore(): Promise<number | undefined> {
-	return number({ message: "Next throw:", max: 10, min: 0 });
+async function askNextScore(message: string): Promise<number> {
+	const response = await number({ message: message, max: 10, min: 0 });
+
+	if (response === undefined) {
+		throw new Error("Error: Invalid number");
+	}
+
+	return response;
 }
 
 export type LastFrame = {
@@ -13,70 +20,56 @@ export type LastFrame = {
 
 export type Frame = { firstThrow: number; secondThrow?: number };
 
-export type Throws = {
+export type FrameGrid = {
 	frames: Map<number, Frame>;
 	lastFrame: LastFrame;
 };
 
+function clearLastLines(n: number) {
+	readline.moveCursor(process.stdout, 0, -n);
+	readline.clearLine(process.stdout, 0);
+}
+
 // start game loop
 export class BowlingGame {
 	async start(rounds: number) {
-		console.log("Bowling game has started!");
-		console.log("");
+		console.log("The bowling game has started!");
 		console.log(`You have ${rounds} rounds`);
 
-		const throws: Throws = { lastFrame: null, frames: new Map() };
+		const frameGrid: FrameGrid = { lastFrame: null, frames: new Map() };
 
-		displayScoreGrid(rounds, throws);
+		printScoreGrid(rounds, frameGrid);
 
 		// rounds 1 to n - 1
 		for (let i = 1; i < rounds; i++) {
-			console.log(`-- Round ${i} --`);
-			const firstThrow = await askNextScore();
-			if (firstThrow === undefined) {
-				console.log("Invalid throw");
-				continue;
-			}
-			throws.frames.set(i, { firstThrow });
-			displayScoreGrid(rounds, throws);
+			console.log(`Round ${i}`);
+			const firstThrow = await askNextScore("First throw:");
+			frameGrid.frames.set(i, { firstThrow });
+			printScoreGrid(rounds, frameGrid);
 
-			const secondThrow = await askNextScore();
-			if (secondThrow === undefined) {
-				console.log("Invalid throw");
-				continue;
-			}
+			const secondThrow = await askNextScore("Second throw:");
 
-			throws.frames.set(i, { firstThrow, secondThrow });
-			displayScoreGrid(rounds, throws);
+			frameGrid.frames.set(i, { firstThrow, secondThrow });
+			printScoreGrid(rounds, frameGrid);
 		}
 
 		// last round
-		console.log("-- Last round --");
-		const firstThrow = await askNextScore();
-		if (firstThrow === undefined) {
-			console.log("Invalid throw");
-			return;
-		}
+		await handleLastFrame(frameGrid, rounds);
+	}
+}
 
-		throws.lastFrame = { firstThrow };
-		displayScoreGrid(rounds, throws);
+async function handleLastFrame(frameGrid: FrameGrid, rounds: number) {
+	console.log("Last round");
+	const firstThrow = await askNextScore("First throw:");
+	frameGrid.lastFrame = { firstThrow: firstThrow };
+	printScoreGrid(rounds, frameGrid);
 
-		const secondThrow = await askNextScore();
-		if (secondThrow === undefined) {
-			console.log("Invalid throw");
-			return;
-		}
+	const secondThrow = await askNextScore("Second throw:");
+	frameGrid.lastFrame.secondThrow = secondThrow;
+	printScoreGrid(rounds, frameGrid);
 
-		throws.lastFrame.secondThrow = secondThrow;
-		displayScoreGrid(rounds, throws);
-
-		const thirdThrow = await askNextScore();
-		if (thirdThrow === undefined) {
-			console.log("Invalid throw");
-			return;
-		}
-
-		throws.lastFrame.thirdThrow = thirdThrow;
-		displayScoreGrid(rounds, throws);
+	if (firstThrow + secondThrow >= 10) {
+		frameGrid.lastFrame.thirdThrow = await askNextScore("Last throw:");
+		printScoreGrid(rounds, frameGrid);
 	}
 }
