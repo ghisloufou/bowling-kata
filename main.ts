@@ -1,3 +1,3 @@
 import { BowlingGame } from "./src/bowlingGame";
 
-new BowlingGame().start(4);
+new BowlingGame().start(10);
