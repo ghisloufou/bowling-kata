@@ -1,4 +1,3 @@
-import readline from "node:readline";
 import { number } from "@inquirer/prompts";
 import { printScoreGrid } from "./printScoreGrid";
 
@@ -24,11 +23,6 @@ export type FrameGrid = {
 	frames: Map<number, Frame>;
 	lastFrame: LastFrame;
 };
-
-function clearLastLines(n: number) {
-	readline.moveCursor(process.stdout, 0, -n);
-	readline.clearLine(process.stdout, 0);
-}
 
 // start game loop
 export class BowlingGame {
