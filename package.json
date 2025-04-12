@@ -4,8 +4,9 @@
   "description": "",
   "main": "main.ts",
   "scripts": {
-    "run": "node main",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "run": "ts-node main.ts",
+    "compile": "tsc",
+    "test": "vitest"
   },
   "keywords": [],
   "author": "",
@@ -13,7 +14,13 @@
   "packageManager": "pnpm@10.8.0",
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
+    "@types/node": "^22.14.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
     "vitest": "^3.1.1"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.4.1",
+    "zod": "^3.24.2"
   }
 }
