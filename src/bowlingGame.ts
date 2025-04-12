@@ -2,8 +2,8 @@ import readline from "node:readline";
 import { number } from "@inquirer/prompts";
 import { printScoreGrid } from "./printScoreGrid";
 
-async function askNextScore(message: string): Promise<number> {
-	const response = await number({ message: message, max: 10, min: 0 });
+async function askNextScore(message: string, max = 10): Promise<number> {
+	const response = await number({ message: message, max, min: 0 });
 
 	if (response === undefined) {
 		throw new Error("Error: Invalid number");
@@ -47,7 +47,11 @@ export class BowlingGame {
 			frameGrid.frames.set(i, { firstThrow });
 			printScoreGrid(rounds, frameGrid);
 
-			const secondThrow = await askNextScore("Second throw:");
+			if (firstThrow === 10) {
+				continue;
+			}
+
+			const secondThrow = await askNextScore("Second throw:", 10 - firstThrow);
 
 			frameGrid.frames.set(i, { firstThrow, secondThrow });
 			printScoreGrid(rounds, frameGrid);
