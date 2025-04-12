@@ -62,7 +62,10 @@ async function handleLastFrame(frameGrid: FrameGrid, rounds: number) {
 	frameGrid.lastFrame = { firstThrow: firstThrow };
 	printScoreGrid(rounds, frameGrid);
 
-	const secondThrow = await askNextScore("Second throw:");
+	const secondThrow = await askNextScore(
+		"Second throw:",
+		10 - (firstThrow === 10 ? 0 : firstThrow),
+	);
 	frameGrid.lastFrame.secondThrow = secondThrow;
 	printScoreGrid(rounds, frameGrid);
 

@@ -117,6 +117,7 @@ function formatLastFrameSecondThrow(
 
 	return formatFirstThrow(secondThrow);
 }
+
 function formatLastFrameScore(frame: LastFrame): string {
 	if (frame === null) {
 		return EMPTY_FRAME;
@@ -126,7 +127,7 @@ function formatLastFrameScore(frame: LastFrame): string {
 
 	if (frame.secondThrow !== undefined) {
 		if (frame.thirdThrow === undefined) {
-			frameScore += `${formatSecondThrow(frame.firstThrow, frame.secondThrow)} `;
+			frameScore += `${formatLastFrameSecondThrow(frame.firstThrow, frame.secondThrow)} `;
 		} else {
 			frameScore += `${formatLastFrameSecondThrow(frame.firstThrow, frame.secondThrow)}${formatFirstThrow(frame.thirdThrow)}`;
 		}
