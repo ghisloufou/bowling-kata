@@ -5,3 +5,5 @@ To start the project run
 Then
 
 ``pnpm start``
+
+For the specificatons of the project, see [specifications](./specifications.md)
