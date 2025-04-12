@@ -46,7 +46,7 @@ export class BowlingGame {
 				continue;
 			}
 
-			throws.frames.set(i, { firstThrow: secondThrow });
+			throws.frames.set(i, { firstThrow, secondThrow });
 			displayScoreGrid(rounds, throws);
 		}
 
