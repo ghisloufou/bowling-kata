@@ -1,9 +1,5 @@
-To start the project, run:
+Start the project with ``npm install`` and ``npm run start``
 
-``npm install``
-
-Then:
-
-``npm run start``
+Run tests with ``npm run test``
 
 For the specifications of the project, see [specifications](./specifications.md)
