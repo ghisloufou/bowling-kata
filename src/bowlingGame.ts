@@ -13,7 +13,10 @@ export type ScoreGrid = {
 	lastFrame: LastFrame;
 };
 
-type AskNextThrowScore = (message: string, max?: number) => Promise<number>;
+export type AskNextThrowScore = (
+	message: string,
+	max?: number,
+) => Promise<number>;
 
 export class BowlingGame {
 	private readonly askNextThrowScore: AskNextThrowScore;

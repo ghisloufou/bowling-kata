@@ -1,9 +1,10 @@
 import { number } from "@inquirer/prompts";
+import type { AskNextThrowScore } from "./bowlingGame";
 
-export async function getNumberFromUser(
-	message: string,
+export const getNumberFromUser: AskNextThrowScore = async (
+	message,
 	max = 10,
-): Promise<number> {
+) => {
 	const response = await number({ message: message, max, min: 0 });
 
 	if (response === undefined) {
@@ -11,4 +12,4 @@ export async function getNumberFromUser(
 	}
 
 	return response;
-}
+};
