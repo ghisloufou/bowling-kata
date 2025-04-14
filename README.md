@@ -1,9 +1,9 @@
-To start the project run
+To start the project, run:
 
-``pnpm install``
+``npm install``
 
-Then
+Then:
 
-``pnpm start``
+``npm run start``
 
-For the specificatons of the project, see [specifications](./specifications.md)
+For the specifications of the project, see [specifications](./specifications.md)
