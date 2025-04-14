@@ -1,3 +1,4 @@
 import { BowlingGame } from "./src/bowlingGame";
+import { getNumberFromUser } from "./src/getNumberFromUser";
 
-new BowlingGame().start(10);
+new BowlingGame(getNumberFromUser).start(10);
