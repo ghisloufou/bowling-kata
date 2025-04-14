@@ -19,27 +19,26 @@ export type LastFrame = {
 
 export type Frame = { firstThrow: number; secondThrow?: number };
 
-export type FrameGrid = {
+export type ScoreGrid = {
 	frames: Map<number, Frame>;
 	lastFrame: LastFrame;
 };
 
-// start game loop
 export class BowlingGame {
 	async start(rounds: number) {
 		console.log("The bowling game has started!");
 		console.log(`You have ${rounds} rounds`);
 
-		const frameGrid: FrameGrid = { lastFrame: null, frames: new Map() };
+		const scoreGrid: ScoreGrid = { frames: new Map(), lastFrame: null };
 
-		printScoreGrid(rounds, frameGrid);
+		printScoreGrid(rounds, scoreGrid);
 
-		// rounds 1 to n - 1
+		// handle rounds 1 to n - 1
 		for (let i = 1; i < rounds; i++) {
 			console.log(`Round ${i}`);
 			const firstThrow = await askNextScore("First throw:");
-			frameGrid.frames.set(i, { firstThrow });
-			printScoreGrid(rounds, frameGrid);
+			scoreGrid.frames.set(i, { firstThrow });
+			printScoreGrid(rounds, scoreGrid);
 
 			if (firstThrow === 10) {
 				continue;
@@ -47,30 +46,26 @@ export class BowlingGame {
 
 			const secondThrow = await askNextScore("Second throw:", 10 - firstThrow);
 
-			frameGrid.frames.set(i, { firstThrow, secondThrow });
-			printScoreGrid(rounds, frameGrid);
+			scoreGrid.frames.set(i, { firstThrow, secondThrow });
+			printScoreGrid(rounds, scoreGrid);
 		}
 
-		// last round
-		await handleLastFrame(frameGrid, rounds);
-	}
-}
+		// handle last round
+		console.log("Last round");
+		const firstThrow = await askNextScore("First throw:");
+		scoreGrid.lastFrame = { firstThrow: firstThrow };
+		printScoreGrid(rounds, scoreGrid);
 
-async function handleLastFrame(frameGrid: FrameGrid, rounds: number) {
-	console.log("Last round");
-	const firstThrow = await askNextScore("First throw:");
-	frameGrid.lastFrame = { firstThrow: firstThrow };
-	printScoreGrid(rounds, frameGrid);
+		const secondThrow = await askNextScore(
+			"Second throw:",
+			10 - (firstThrow === 10 ? 0 : firstThrow),
+		);
+		scoreGrid.lastFrame.secondThrow = secondThrow;
+		printScoreGrid(rounds, scoreGrid);
 
-	const secondThrow = await askNextScore(
-		"Second throw:",
-		10 - (firstThrow === 10 ? 0 : firstThrow),
-	);
-	frameGrid.lastFrame.secondThrow = secondThrow;
-	printScoreGrid(rounds, frameGrid);
-
-	if (firstThrow + secondThrow >= 10) {
-		frameGrid.lastFrame.thirdThrow = await askNextScore("Last throw:");
-		printScoreGrid(rounds, frameGrid);
+		if (firstThrow + secondThrow >= 10) {
+			scoreGrid.lastFrame.thirdThrow = await askNextScore("Last throw:");
+			printScoreGrid(rounds, scoreGrid);
+		}
 	}
 }

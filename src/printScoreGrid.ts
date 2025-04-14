@@ -1,18 +1,18 @@
-import type { Frame, FrameGrid, LastFrame } from "./bowlingGame";
+import type { Frame, LastFrame, ScoreGrid } from "./bowlingGame";
 import { EMPTY_FRAME, getRemainingSpaces } from "./common";
 import { formatFrameNumberLine } from "./formatFrameNumberLine";
 
-export function printScoreGrid(totalFrames: number, throws: FrameGrid) {
-	console.log(formatScoreGrid(totalFrames, throws));
+export function printScoreGrid(totalFrames: number, scoreGrid: ScoreGrid) {
+	console.log(formatScoreGrid(totalFrames, scoreGrid));
 }
 
 export function formatScoreGrid(
 	totalFrames: number,
-	throws: FrameGrid,
+	scoreGrid: ScoreGrid,
 ): string {
 	const frameLine = formatFrameNumberLine(totalFrames);
-	const frameScore = formatFrameScoreLine(totalFrames, throws);
-	const totalScore = formatTotalScoreLine(totalFrames, throws);
+	const frameScore = formatFrameScoreLine(totalFrames, scoreGrid);
+	const totalScore = formatTotalScoreLine(totalFrames, scoreGrid);
 
 	return `
 	${frameLine}
@@ -22,26 +22,26 @@ export function formatScoreGrid(
 
 export function formatTotalScoreLine(
 	totalFrames: number,
-	throws: FrameGrid,
+	scoreGrid: ScoreGrid,
 ): string {
 	const totalScore = ["Total score	"];
 
 	for (let i = 1; i < totalFrames; i++) {
-		const frame = throws.frames.get(i);
+		const frame = scoreGrid.frames.get(i);
 		if (frame === undefined) {
 			totalScore.push(EMPTY_FRAME);
 			continue;
 		}
 
-		const frameTotalScore = getFrameTotalScore(throws, i).toString();
+		const frameTotalScore = getFrameTotalScore(scoreGrid, i).toString();
 		const formattedScore = `${getRemainingSpaces(frameTotalScore.length)}${frameTotalScore}`;
 		totalScore.push(formattedScore);
 	}
 
-	if (throws.lastFrame === null) {
+	if (scoreGrid.lastFrame === null) {
 		totalScore.push(EMPTY_FRAME);
 	} else {
-		const lastFrameTotalScore = getLastFrameTotalScore(throws).toString();
+		const lastFrameTotalScore = getLastFrameTotalScore(scoreGrid).toString();
 		totalScore.push(
 			`${getRemainingSpaces(lastFrameTotalScore.length)}${lastFrameTotalScore}`,
 		);
@@ -62,11 +62,14 @@ function formatFrameScore(frame: Frame): string {
 	return `${getRemainingSpaces(frameScore.length)}${frameScore}`;
 }
 
-function formatFrameScoreLine(totalFrames: number, throws: FrameGrid): string {
+function formatFrameScoreLine(
+	totalFrames: number,
+	scoreGrid: ScoreGrid,
+): string {
 	const frameScore = ["Frame score	"];
 
 	for (let i = 1; i < totalFrames; i++) {
-		const frame = throws.frames.get(i);
+		const frame = scoreGrid.frames.get(i);
 		if (frame === undefined) {
 			frameScore.push(EMPTY_FRAME);
 			continue;
@@ -75,7 +78,7 @@ function formatFrameScoreLine(totalFrames: number, throws: FrameGrid): string {
 		frameScore.push(formatFrameScore(frame));
 	}
 
-	frameScore.push(formatLastFrameScore(throws.lastFrame));
+	frameScore.push(formatLastFrameScore(scoreGrid.lastFrame));
 
 	return `${frameScore.join("|")}|`;
 }
@@ -137,10 +140,10 @@ function formatLastFrameScore(frame: LastFrame): string {
 }
 
 function calculateStrikeAdditionalPoints(
-	throws: FrameGrid,
+	scoreGrid: ScoreGrid,
 	frameNumber: number,
 ): number {
-	const nextFrame = getNextFrame(throws, frameNumber + 1);
+	const nextFrame = getNextFrame(scoreGrid, frameNumber + 1);
 
 	if (nextFrame === undefined || nextFrame === null) {
 		return 0;
@@ -152,7 +155,7 @@ function calculateStrikeAdditionalPoints(
 		return points + nextFrame.secondThrow;
 	}
 
-	const nextNextFrame = getNextFrame(throws, frameNumber + 2);
+	const nextNextFrame = getNextFrame(scoreGrid, frameNumber + 2);
 	if (nextNextFrame === undefined || nextNextFrame === null) {
 		return points;
 	}
@@ -160,21 +163,21 @@ function calculateStrikeAdditionalPoints(
 	return points + nextNextFrame.firstThrow;
 }
 
-function getFrameTotalScore(throws: FrameGrid, frameNumber: number): number {
-	const frame = throws.frames.get(frameNumber);
+function getFrameTotalScore(scoreGrid: ScoreGrid, frameNumber: number): number {
+	const frame = scoreGrid.frames.get(frameNumber);
 
 	if (frame === undefined) {
 		return 0;
 	}
 
-	const previousTotalScore = getFrameTotalScore(throws, frameNumber - 1);
+	const previousTotalScore = getFrameTotalScore(scoreGrid, frameNumber - 1);
 
 	let totalScore =
 		previousTotalScore + frame.firstThrow + (frame.secondThrow ?? 0);
 
 	// Handle strike
 	if (frame.firstThrow === 10) {
-		totalScore += calculateStrikeAdditionalPoints(throws, frameNumber);
+		totalScore += calculateStrikeAdditionalPoints(scoreGrid, frameNumber);
 	}
 
 	// Handle spare
@@ -182,7 +185,7 @@ function getFrameTotalScore(throws: FrameGrid, frameNumber: number): number {
 		frame.secondThrow !== undefined &&
 		frame.firstThrow + frame.secondThrow === 10
 	) {
-		const nextFrame = getNextFrame(throws, frameNumber + 1);
+		const nextFrame = getNextFrame(scoreGrid, frameNumber + 1);
 		if (nextFrame) {
 			totalScore += nextFrame.firstThrow;
 		}
@@ -192,23 +195,26 @@ function getFrameTotalScore(throws: FrameGrid, frameNumber: number): number {
 }
 
 function getNextFrame(
-	throws: FrameGrid,
+	scoreGrid: ScoreGrid,
 	nextFrame: number,
 ): Frame | undefined | LastFrame {
-	if (nextFrame > throws.frames.size) {
-		return throws.lastFrame;
+	if (nextFrame > scoreGrid.frames.size) {
+		return scoreGrid.lastFrame;
 	}
-	return throws.frames.get(nextFrame);
+	return scoreGrid.frames.get(nextFrame);
 }
 
-function getLastFrameTotalScore(throws: FrameGrid): number {
-	const frame = throws.lastFrame;
+function getLastFrameTotalScore(scoreGrid: ScoreGrid): number {
+	const frame = scoreGrid.lastFrame;
 
 	if (frame === null) {
 		return 0;
 	}
 
-	const previousTotalScore = getFrameTotalScore(throws, throws.frames.size);
+	const previousTotalScore = getFrameTotalScore(
+		scoreGrid,
+		scoreGrid.frames.size,
+	);
 
 	return (
 		previousTotalScore +
